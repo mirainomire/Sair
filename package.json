@@ -1,0 +1,11 @@
+{
+  "name": "susiair-pilot",
+  "private": true,
+  "description": "Pilot aplikasi web mobile Susi Air. Frontend dan backend di-host terpisah.",
+  "scripts": {
+    "dev:api": "npm --prefix nest run start:dev",
+    "dev:web": "npm --prefix nuxt run dev",
+    "build:api": "npm --prefix nest run build",
+    "build:web": "npm --prefix nuxt run build"
+  }
+}

@@ -1,0 +1,22 @@
+services:
+  api:
+    build: ./nest
+    environment:
+      PORT: 3001
+      CORS_ORIGIN: http://localhost:3000
+      AUTH_SECRET: change-me
+      SAMPLE_TODAY: 2026-05-15
+    ports:
+      - "3001:3001"
+
+  web:
+    build: ./nuxt
+    environment:
+      NUXT_PUBLIC_API_BASE: http://localhost:3001/api
+      NUXT_API_BASE_SERVER: http://api:3001/api
+      HOST: 0.0.0.0
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
