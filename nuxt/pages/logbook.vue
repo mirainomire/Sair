@@ -86,7 +86,7 @@ type HourPayload = { days: { date: string; hours: number }[] }
 type LogbookEntry = { date: string; duty: Duty | null; hours: number }
 
 const api = useApi()
-const { data, pending, error } = await useAsyncData('pilot-logbook', async () => {
+const { data, pending, error } = await useAuthedAsyncData('pilot-logbook', async () => {
   const pilot = await api.get<Envelope<{ scheduleToday: string }>>('/pilot/me')
   const referenceDate = pilot.data.scheduleToday
   const months = monthRange(referenceDate, 12)

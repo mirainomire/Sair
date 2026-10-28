@@ -65,11 +65,11 @@ const api = useApi()
 const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const monthKey = ref('')
 
-const { data: me, error: meError } = await useAsyncData('pilot-me-schedule', () => api.get<Envelope<{ scheduleToday: string }>>('/pilot/me'))
+const { data: me, error: meError } = await useAuthedAsyncData('pilot-me-schedule', () => api.get<Envelope<{ scheduleToday: string }>>('/pilot/me'))
 const sampleToday = me.value?.data.scheduleToday ?? ''
 monthKey.value = sampleToday.slice(0, 7)
 
-const { data, pending, error } = await useAsyncData(
+const { data, pending, error } = await useAuthedAsyncData(
   () => `schedule-${monthKey.value || 'pending'}`,
   () => {
     if (!monthKey.value) return Promise.resolve(null)

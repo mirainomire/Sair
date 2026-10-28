@@ -173,14 +173,14 @@ onBeforeUnmount(() => {
   if (welcomeTimer) clearTimeout(welcomeTimer)
 })
 
-const { data, pending, error } = await useAsyncData('home', async () => {
+const { data, pending, error } = await useAuthedAsyncData('home', async () => {
   const me = await api.get<Envelope<PilotProfile>>('/pilot/me')
   pilotStore.setProfile(me.data)
   const docs = await api.get<Envelope<{ documents: Doc[] }>>('/documents')
   return { me: me.data, docs: docs.data }
 })
 
-const { data: chart, error: chartError } = await useAsyncData(
+const { data: chart, error: chartError } = await useAuthedAsyncData(
   () => `home-chart-${range.value}`,
   () => api.get<Envelope<Summary>>('/flight-hours/summary', { range: range.value }),
   { watch: [range] },

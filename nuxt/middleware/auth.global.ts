@@ -1,5 +1,5 @@
 export default defineNuxtRouteMiddleware((to) => {
-  const token = useCookie<string | null>('susiair_token')
+  const token = useAuthToken(true)
   if (to.path === '/login') {
     if (token.value) return navigateTo('/')
     return

@@ -32,7 +32,7 @@ import { errorText } from '~/utils/format'
 definePageMeta({ layout: 'auth', pageTransition: false })
 
 const api = useApi()
-const token = useCookie<string | null>('susiair_token', { sameSite: 'lax', path: '/', maxAge: 60 * 60 * 24 * 7 })
+const token = useAuthToken()
 const username = ref('johndoe')
 const password = ref('')
 const message = ref('')
@@ -62,6 +62,8 @@ async function submit() {
       password: password.value,
     })
     token.value = response.data.token
+    await nextTick()
+    clearNuxtData()
     await navigateTo({ path: '/', query: { welcome: '1' } })
   } catch (error) {
     message.value = errorText(error)

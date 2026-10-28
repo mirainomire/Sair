@@ -34,10 +34,10 @@ import { errorText } from '~/utils/format'
 import type { PilotProfile } from '~/stores/pilot'
 
 const api = useApi()
-const token = useCookie<string | null>('susiair_token')
+const token = useAuthToken()
 const pilotStore = usePilotStore()
 const signingOut = ref(false)
-const { data, pending, error } = await useAsyncData('more-pilot', () => api.get<Envelope<PilotProfile>>('/pilot/me'))
+const { data, pending, error } = await useAuthedAsyncData('more-pilot', () => api.get<Envelope<PilotProfile>>('/pilot/me'))
 const pilot = computed(() => data.value?.data)
 const loadError = computed(() => (error.value ? errorText(error.value) : ''))
 
@@ -49,6 +49,7 @@ async function logout() {
   signingOut.value = true
   token.value = null
   pilotStore.clear()
+  clearNuxtData()
   await navigateTo('/login')
 }
 

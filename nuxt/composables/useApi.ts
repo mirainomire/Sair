@@ -1,6 +1,6 @@
 export function useApi() {
   const config = useRuntimeConfig()
-  const token = useCookie<string | null>('susiair_token')
+  const token = useAuthToken(true)
   const base = (import.meta.server ? config.apiBaseServer : config.public.apiBase).replace(/\/$/, '')
 
   function url(path: string) {

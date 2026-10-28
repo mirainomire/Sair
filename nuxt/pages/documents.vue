@@ -35,7 +35,7 @@ type DocumentPayload = {
 }
 
 const api = useApi()
-const { data, pending, error } = await useAsyncData('crew-documents', () => api.get<Envelope<DocumentPayload>>('/documents'))
+const { data, pending, error } = await useAuthedAsyncData('crew-documents', () => api.get<Envelope<DocumentPayload>>('/documents'))
 const payload = computed(() => data.value?.data)
 const documents = computed(() => payload.value?.documents ?? [])
 const loadError = computed(() => (error.value ? errorText(error.value) : ''))
