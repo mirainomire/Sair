@@ -13,8 +13,14 @@ export async function useAuthedAsyncData<T>(
 ) {
   const token = useAuthToken(true)
   const result = await useAsyncData(key, handler, options)
-  if (import.meta.client && isUnauthorized(result.error.value) && token.value) {
-    await result.refresh()
+  if (import.meta.client && isUnauthorized(result.error.value)) {
+    if (token.value) await result.refresh()
+    if (isUnauthorized(result.error.value)) {
+      useAuthToken().value = null
+      clearNuxtData()
+      await nextTick()
+      await navigateTo('/login')
+    }
   }
   return result
 }
