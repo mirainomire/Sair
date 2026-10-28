@@ -6,6 +6,7 @@ dist
 *.log
 .DS_Store
 coverage
+*.tsbuildinfo
 nest/dist
 nuxt/.nuxt
 nuxt/.output
