@@ -81,9 +81,13 @@ The login token is an HMAC of the username and expiry. One account is enough for
 
 ## Deploy
 
-Frontend: Vercel or Netlify. Set the project root to `nuxt`, build command `npm run build`, and output `.output`. Set `NUXT_PUBLIC_API_BASE` and `NUXT_API_BASE_SERVER` to the public API URL, including `/api`.
+The two apps are deployed separately and the frontend calls the public API.
 
-Backend: Railway, Render, or Fly. Set the project root to `nest`. The Dockerfile builds the API and starts `node dist/main.js`. Set `PORT`, `CORS_ORIGIN` to the web origin, `AUTH_SECRET`, and optionally `SAMPLE_TODAY`.
+- Frontend: https://sair-web-zeta.vercel.app
+- API and OpenAPI docs: https://sair-api-eight.vercel.app/api/docs
+- Repository: https://github.com/mirainomire/Sair
+
+Sample sign-in is `johndoe` / `susiairtest`. Operational today stays 15 May 2026. The schedule detail screen is still the placeholder. Flight hours, documents, and the schedule are loaded from the JSON files at API startup. There is no database.
 
 ## With more time
 
