@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: sair-api
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./nest/Dockerfile
+    dockerContext: ./nest
+    healthCheckPath: /api/docs
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: SAMPLE_TODAY
+        value: "2026-05-15"
+      - key: AUTH_SECRET
+        generateValue: true
