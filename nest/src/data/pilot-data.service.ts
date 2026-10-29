@@ -56,7 +56,7 @@ export class PilotDataService implements OnModuleInit {
   // instead of reading JSON files or knowing where the files are stored.
   readonly account = {
     username: 'johndoe',
-    password: 'susiairtest',
+    passwordHash: 'scrypt$susiair-demo-salt$28431d2f5273d0b300067536e35281b6083b9628502913d9d920055f22b0c9c6dad1a49ecb855bf863d795d9b83d745a9b813bac6fdec3decb311e9e463d7363',
     rank: 'Captain',
     homeBase: 'MKW',
     avatarUrl: '/brand/pilot-avatar.png',

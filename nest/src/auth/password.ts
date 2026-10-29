@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from 'crypto';
+import { createHmac, scryptSync, timingSafeEqual } from 'crypto';
 
 export type TokenPayload = { username: string; name: string; exp: number };
 
@@ -34,4 +34,12 @@ export function safeEqual(left: string, right: string) {
     return false;
   }
   return timingSafeEqual(a, b);
+}
+
+export function verifyPassword(password: string, encoded: string) {
+  const [algorithm, salt, expectedHex] = encoded.split('$');
+  if (algorithm !== 'scrypt' || !salt || !expectedHex || !/^[0-9a-f]+$/i.test(expectedHex)) return false;
+  const actual = scryptSync(password, salt, expectedHex.length / 2);
+  const expected = Buffer.from(expectedHex, 'hex');
+  return actual.length === expected.length && timingSafeEqual(actual, expected);
 }

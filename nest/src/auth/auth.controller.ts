@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Req } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiCommonErrors, apiJson } from '../common/api-docs';
 import { AuthService } from './auth.service';
@@ -24,8 +24,8 @@ export class AuthController {
     ],
     [{ summary: 'Wrong username or password', message: 'Username or password does not match.' }],
   )
-  login(@Body() body: LoginDto) {
-    return this.auth.login(body);
+  login(@Body() body: LoginDto, @Req() request: { ip?: string; socket?: { remoteAddress?: string } }) {
+    return this.auth.login(body, request.ip ?? request.socket?.remoteAddress ?? 'unknown');
   }
 
 }

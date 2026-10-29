@@ -81,7 +81,7 @@ A chart point after 15 May 2026 still returns a trailing sum through that date. 
 
 The chart's Y ceiling starts at the configured maximum for the toggle (45, 125, 325, 625, or 1200). If a rolling sum is higher, the ceiling grows to that sum so the line stays inside the card. The red line stays on the regulatory limit.
 
-The login token is an HMAC of the username and expiry. One account is enough for this brief. Profile and operational contact values are seeded demo values and must be replaced with verified operator data before production.
+The login token is an HMAC of the username and expiry. The demo password is stored as a scrypt hash, not plaintext. One account is enough for this brief. Profile and operational contact values are seeded demo values and must be replaced with verified operator data before production.
 
 The Profile screen stores appearance, language, notification, and session preferences on the device. Browser biometric unlock is exposed only when WebAuthn is supported; a production deployment should add a server-backed passkey registration and assertion flow.
 
@@ -97,4 +97,4 @@ Sample sign-in is `johndoe` / `susiairtest`. Operational today stays 15 May 2026
 
 ## With more time
 
-Replace the single hardcoded account with a user store, persist password changes, and implement server-backed WebAuthn/passkeys and push notifications. Finish the schedule detail screen, which is a placeholder. Lock `CORS_ORIGIN` to the real web origin instead of `*`, and replace demo profile/contact values with operator-managed data.
+Replace the single hardcoded account with a user store, server-backed WebAuthn/passkeys, and push notifications. Finish the schedule detail screen, which is a placeholder, and replace demo profile/contact values with operator-managed data.
