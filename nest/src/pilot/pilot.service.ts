@@ -14,7 +14,13 @@ export class PilotService {
         avatarUrl: this.data.account.avatarUrl,
         rank: this.data.account.rank,
         homeBase: this.data.account.homeBase,
+        crewId: this.data.account.crewId,
+        aircraftRatings: this.data.account.aircraftRatings,
+        email: this.data.account.email,
+        mobile: this.data.account.mobile,
+        operationsContacts: this.data.account.operationsContacts,
         scheduleToday: this.data.scheduleToday,
+        lastSyncedAt: this.data.lastSyncedAt,
       },
     };
   }

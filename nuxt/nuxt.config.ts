@@ -39,8 +39,8 @@ export default defineNuxtConfig({
         },
       ],
     },
-    pageTransition: { name: 'soft' },
-    layoutTransition: { name: 'layout' },
+    pageTransition: { name: 'soft', mode: 'out-in', duration: 140 },
+    layoutTransition: { name: 'layout', duration: 140 },
   },
   devServer: {
     host: '0.0.0.0',

@@ -14,7 +14,7 @@
     </NuxtLink>
     <NuxtLink to="/more" :class="{ active: route.path.startsWith('/more') }">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="6" cy="12" r="1.2" fill="currentColor" /><circle cx="12" cy="12" r="1.2" fill="currentColor" /><circle cx="18" cy="12" r="1.2" fill="currentColor" /></svg>
-      More
+      Profile
     </NuxtLink>
   </nav>
 </template>

@@ -9,7 +9,7 @@ const signedOut = [{ summary: 'No token, or a token the server cannot verify', m
 
 @ApiTags('flight-hours')
 @ApiBearerAuth()
-@Controller(['flight-hours', 'flights-hours'])
+@Controller('flights-hours')
 export class FlightHoursController {
   constructor(private readonly hours: FlightHoursService) {}
 

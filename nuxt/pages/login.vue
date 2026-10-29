@@ -10,6 +10,10 @@
         <input v-model="username" type="text" autocomplete="username" required :aria-invalid="Boolean(validation.username)" :aria-describedby="validation.username ? 'username-error' : undefined" @input="clearMessages" />
         <small v-if="validation.username" id="username-error" class="field-error" role="alert">{{ validation.username }}</small>
       </label>
+      <label class="login-option">
+        <input v-model="rememberDevice" type="checkbox" />
+        <span>Keep me signed in on this device</span>
+      </label>
       <label class="field">
         <span>Password</span>
         <input v-model="password" type="password" autocomplete="current-password" required minlength="6" :aria-invalid="Boolean(validation.password)" :aria-describedby="validation.password ? 'password-error' : undefined" @input="clearMessages" />
@@ -35,6 +39,7 @@ const api = useApi()
 const token = useAuthToken()
 const username = ref('johndoe')
 const password = ref('')
+const rememberDevice = ref(true)
 const message = ref('')
 const pending = ref(false)
 const validation = ref({ username: '', password: '' })
@@ -62,6 +67,9 @@ async function submit() {
       password: password.value,
     })
     token.value = response.data.token
+    if (!rememberDevice.value && import.meta.client) {
+      document.cookie = `susiair_token=${encodeURIComponent(response.data.token)}; Path=/; SameSite=Lax${import.meta.dev ? '' : '; Secure'}`
+    }
     await nextTick()
     clearNuxtData()
     await navigateTo({ path: '/', query: { welcome: '1' } })

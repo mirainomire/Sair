@@ -4,6 +4,7 @@ import { join } from 'path';
 import { isRealIsoDate } from '../common/dates';
 
 export type FlightDay = { date: string; hours: number };
+export type OperationsContact = { phone: string; whatsapp: string; hours: string };
 
 export type ChartBound = {
   limit: number;
@@ -51,19 +52,31 @@ type ScheduleFile = {
 
 @Injectable()
 export class PilotDataService implements OnModuleInit {
+  // This is the sample-data boundary. Feature services consume typed getters
+  // instead of reading JSON files or knowing where the files are stored.
   readonly account = {
     username: 'johndoe',
     password: 'susiairtest',
     rank: 'Captain',
     homeBase: 'MKW',
     avatarUrl: '/brand/pilot-avatar.png',
+    crewId: 'SA-DEMO-0421',
+    aircraftRatings: ['C208B', 'DHC-6 Twin Otter'] as string[],
+    email: 'john.doe@susiair.example',
+    mobile: '+628111234567',
+    operationsContacts: {
+      crewScheduling: { phone: '+628111234568', whatsapp: '628111234568', hours: '06:00–22:00 WIB daily' } as OperationsContact,
+      occ: { phone: '+628111234569', whatsapp: '628111234569', hours: '24/7 operational support' } as OperationsContact,
+    },
   };
 
   private flightFile!: FlightFile;
   private documentFile!: DocumentFile;
   private scheduleFile!: ScheduleFile;
+  private loadedAt = '';
 
   onModuleInit() {
+    this.loadedAt = new Date().toISOString();
     const dir = this.dataDir();
     this.flightFile = this.read<FlightFile>(dir, 'mock-flight-hours.json');
     this.documentFile = this.read<DocumentFile>(dir, 'mock-documents.json');
@@ -111,6 +124,10 @@ export class PilotDataService implements OnModuleInit {
 
   get scheduleToday() {
     return this.sampleToday;
+  }
+
+  get lastSyncedAt() {
+    return this.loadedAt;
   }
 
   get legend() {

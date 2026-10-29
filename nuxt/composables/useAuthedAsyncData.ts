@@ -6,6 +6,10 @@ function isUnauthorized(error: unknown) {
   return status === 401
 }
 
+/**
+ * Wraps Nuxt async data for protected screens. It keeps the page-level loading
+ * contract in one place and turns an expired token into a clean login redirect.
+ */
 export async function useAuthedAsyncData<T>(
   key: string | (() => string),
   handler: () => Promise<T>,

@@ -7,7 +7,11 @@ Two apps, hosted separately:
 - `nuxt` is the Nuxt 3 frontend (Composition API, `<script setup>`, Pinia, SCSS).
 - `nest` is the NestJS API. At startup it reads the three JSON files into memory. No database.
 
+Architecture, layer boundaries, request flow, and contribution guidance are documented in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
 Sample sign-in: `johndoe` / `susiairtest`.
+
+The profile `totalFlightHours` value is an overall total only. It is not a PIC, SIC, dual, or instruction breakdown; those categories are not present in the sample data.
 
 Operational today is **15 May 2026**. The API does not call `new Date()` to decide what day it is. Set `SAMPLE_TODAY` to another real `YYYY-MM-DD` if a review needs a different day. `Date` is used only to format or shift a date string the API already returned. The greeting uses the viewer's clock for morning, afternoon, or evening. It does not move the schedule or the hour limits.
 
@@ -59,9 +63,9 @@ Global prefix `/api`. Every route except `POST /auth/login` requires `Authorizat
 | Method | Path | Purpose |
 | --- | --- | --- |
 | POST | `/auth/login` | Username and password. Returns a token. |
-| GET | `/pilot/me` | Name, total hours, avatar. |
-| GET | `/flight-hours?from=&to=` | Daily hours. Missing days are `0`. Also served at `/flights-hours`. |
-| GET | `/flight-hours/summary?range=1w\|1m\|3m\|6m\|1y` | Limit cards and the rolling-sum chart. |
+| GET | `/pilot/me` | Verified profile: name, crew ID, ratings, contact details, overall total hours, and avatar. |
+| GET | `/flights-hours?from=&to=` | Daily hours. Missing days are `0`. |
+| GET | `/flights-hours/summary?range=1w\|1m\|3m\|6m\|1y` | Limit cards and the rolling-sum chart. |
 | GET | `/documents` | Documents and expiry state. |
 | GET | `/schedules?year=&month=` | One month of duties. |
 
@@ -77,7 +81,9 @@ A chart point after 15 May 2026 still returns a trailing sum through that date. 
 
 The chart's Y ceiling starts at the configured maximum for the toggle (45, 125, 325, 625, or 1200). If a rolling sum is higher, the ceiling grows to that sum so the line stays inside the card. The red line stays on the regulatory limit.
 
-The login token is an HMAC of the username and expiry. One account is enough for this brief.
+The login token is an HMAC of the username and expiry. One account is enough for this brief. Profile and operational contact values are seeded demo values and must be replaced with verified operator data before production.
+
+The Profile screen stores appearance, language, notification, and session preferences on the device. Browser biometric unlock is exposed only when WebAuthn is supported; a production deployment should add a server-backed passkey registration and assertion flow.
 
 ## Deploy
 
@@ -91,4 +97,4 @@ Sample sign-in is `johndoe` / `susiairtest`. Operational today stays 15 May 2026
 
 ## With more time
 
-Replace the single hardcoded account with a user store. Finish the schedule detail screen, which is a placeholder. Lock `CORS_ORIGIN` to the real web origin instead of `*`.
+Replace the single hardcoded account with a user store, persist password changes, and implement server-backed WebAuthn/passkeys and push notifications. Finish the schedule detail screen, which is a placeholder. Lock `CORS_ORIGIN` to the real web origin instead of `*`, and replace demo profile/contact values with operator-managed data.

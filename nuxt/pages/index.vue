@@ -17,12 +17,12 @@
                 <p class="eyebrow">{{ greeting }}</p>
                 <h1>{{ home.me.name }}</h1>
                 <div class="home-date-chip">
-                  <span><small>Schedule date</small><strong>{{ todayLabel }}</strong></span>
+                  <span><small>Roster as of</small><strong>{{ todayLabel }}</strong></span>
                 </div>
               </div>
             </div>
             <a class="home-hours-card" href="#flight-hours" aria-label="View flight hours history">
-              <span class="hours-copy"><small>Flight hours</small><strong>{{ totalFlightHoursLabel }} h</strong></span>
+              <span class="hours-copy"><small>Total flight time</small><strong>{{ totalFlightHoursLabel }} h</strong></span>
             </a>
           </div>
         </div>
@@ -32,10 +32,10 @@
         <div class="home-compact-summary" :class="{ visible: compactHeader }" :aria-hidden="!compactHeader" :inert="!compactHeader">
           <div class="home-compact-left">
             <strong>{{ home.me.name }}</strong>
-            <span><small>Schedule date</small><b>{{ todayLabelFull }}</b></span>
+            <span><small>Roster as of</small><b>{{ todayLabelFull }}</b></span>
           </div>
           <div class="home-compact-right">
-            <small>Flight hours</small>
+            <small>Total flight time</small>
             <strong>{{ totalFlightHoursLabel }} h</strong>
           </div>
         </div>
@@ -58,8 +58,8 @@
               <em v-if="limitTone(card)" class="limit-flag">{{ limitText(card) }}</em>
             </div>
             <small class="stat-window">{{ cardWindow(card) }}</small>
-            <strong>{{ card.used }} h</strong>
-            <small>of {{ card.limit }} h</small>
+            <strong>{{ remainingHours(card) }} h left</strong>
+            <small>{{ card.used }} of {{ card.limit }} h used</small>
             <div class="meter">
               <div class="meter-fill" :class="{ hot: card.overLimit }" :style="{ width: `${card.indicator}%` }" />
             </div>
@@ -103,7 +103,7 @@
           <DocMark :id="item.id" />
           <div class="doc-copy">
             <strong>{{ item.label }}</strong>
-            <small>Expires {{ formatDate(item.expiryDate) }}</small>
+            <small>{{ remainingLabel(item) }} · Expires {{ formatDate(item.expiryDate) }}</small>
           </div>
           <span class="doc-status">{{ badgeText(item.state) }}</span>
         </article>
@@ -134,7 +134,7 @@ type Doc = {
   label: string
   expiryDate: string
   daysRemaining: number
-  state: 'safe' | 'soon' | 'expired'
+  state: 'safe' | 'soon' | 'urgent' | 'critical' | 'expired'
 }
 
 const ranges: RangeKey[] = ['1w', '1m', '3m', '6m', '1y']
@@ -174,15 +174,17 @@ onBeforeUnmount(() => {
 })
 
 const { data, pending, error } = await useAuthedAsyncData('home', async () => {
-  const me = await api.get<Envelope<PilotProfile>>('/pilot/me')
+  const [me, docs] = await Promise.all([
+    api.get<Envelope<PilotProfile>>('/pilot/me'),
+            api.get<Envelope<{ documents: Doc[] }>>('/documents'),
+  ])
   pilotStore.setProfile(me.data)
-  const docs = await api.get<Envelope<{ documents: Doc[] }>>('/documents')
   return { me: me.data, docs: docs.data }
 })
 
 const { data: chart, error: chartError } = await useAuthedAsyncData(
   () => `home-chart-${range.value}`,
-  () => api.get<Envelope<Summary>>('/flight-hours/summary', { range: range.value }),
+  () => api.get<Envelope<Summary>>('/flights-hours/summary', { range: range.value }),
   { watch: [range] },
 )
 
@@ -216,6 +218,10 @@ function cardLabel(label: string) {
   return labels[label] ?? label
 }
 
+function dutyTitle(code: string) {
+  return code === 'DTY' ? 'Flight duty' : code === 'RLV' ? 'Leave' : code
+}
+
 function cardWindow(card: Summary['cards'][number]) {
   return card.windowDays === 1 ? 'Today only' : `Rolling ${card.windowDays} days`
 }
@@ -230,12 +236,20 @@ function rangeDescription(range: RangeKey) {
 
 function limitTone(card: { used: number; limit: number; overLimit: boolean }) {
   if (card.overLimit || card.used > card.limit) return 'over'
+  if (card.limit > 0 && card.used / card.limit >= 0.95) return 'critical'
   if (card.limit > 0 && card.used / card.limit >= 0.8) return 'near'
   return ''
 }
 
 function limitText(card: { used: number; limit: number; overLimit: boolean }) {
-  return limitTone(card) === 'over' ? 'Over limit' : 'Near limit'
+  const tone = limitTone(card)
+  if (tone === 'over') return 'Over limit'
+  if (tone === 'critical') return 'Critical'
+  return 'Near limit'
+}
+
+function remainingHours(card: { used: number; limit: number }) {
+  return Math.max(0, card.limit - card.used).toFixed(1)
 }
 
 const rollingPoints = computed(() =>
@@ -259,8 +273,20 @@ function scheduleDateLabel(includeYear: boolean) {
 
 function badgeText(state: Doc['state']) {
   if (state === 'expired') return 'Expired'
+  if (state === 'critical') return 'Critical'
+  if (state === 'urgent') return 'Urgent'
   if (state === 'soon') return 'Due soon'
   return 'Valid'
+}
+
+function remainingLabel(item: Doc) {
+  if (item.daysRemaining <= 0) return overdueLabel(item)
+  return `${item.daysRemaining} day${item.daysRemaining === 1 ? '' : 's'} remaining`
+}
+
+function overdueLabel(item: { daysRemaining: number }) {
+  const days = Math.abs(item.daysRemaining)
+  return `${days} day${days === 1 ? '' : 's'} overdue`
 }
 
 function formatDate(iso: string) {

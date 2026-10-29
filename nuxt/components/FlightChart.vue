@@ -60,7 +60,7 @@
       >
         <title>{{ tip(point) }}</title>
       </circle>
-      <text v-if="limitY !== null && limit !== undefined" class="limit-label" :x="width - rightPad" :y="Math.max(12, limitY - 4)">
+      <text v-if="limitY !== null && limit !== undefined" class="limit-label" :x="width - rightPad - 4" :y="Math.min(height - 4, limitY + 13)">
         Limit {{ formatHours(limit) }}h
       </text>
     </svg>
@@ -118,7 +118,10 @@ const yTicks = computed(() => {
   for (let value = 0; value < scaleMax.value - step / 100; value += step) {
     ticks.push({ value: Number(value.toPrecision(4)), y: yFor(value) })
   }
-  ticks.push({ value: Number(scaleMax.value.toPrecision(4)), y: yFor(scaleMax.value) })
+  const lastTick = ticks[ticks.length - 1]?.value ?? 0
+  if (scaleMax.value - lastTick >= step * 0.6) {
+    ticks.push({ value: Number(scaleMax.value.toPrecision(4)), y: yFor(scaleMax.value) })
+  }
   return ticks
 })
 
