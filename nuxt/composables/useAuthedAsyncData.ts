@@ -13,7 +13,7 @@ function isUnauthorized(error: unknown) {
 export async function useAuthedAsyncData<T>(
   key: string | (() => string),
   handler: () => Promise<T>,
-  options?: Pick<AsyncDataOptions<T>, 'watch'> & { watch?: MultiWatchSources },
+  options?: Pick<AsyncDataOptions<T>, 'watch' | 'lazy'> & { watch?: MultiWatchSources },
 ) {
   const token = useAuthToken(true)
   const result = await useAsyncData(key, handler, options)

@@ -140,7 +140,7 @@ const biometricUnlock = ref(false)
 const { data, pending, error } = await useAuthedAsyncData('more-pilot', () => {
   if (pilotStore.profile) return Promise.resolve({ data: pilotStore.profile })
   return api.get<Envelope<PilotProfile>>('/pilot/me')
-})
+}, { lazy: true })
 const pilot = computed(() => data.value?.data)
 const loadError = computed(() => (error.value ? errorText(error.value) : ''))
 

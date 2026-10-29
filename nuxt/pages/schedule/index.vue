@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="schedule-page">
     <header class="block-head">
       <h1>Schedule</h1>
       <p>Your roster at a glance.</p>
@@ -140,7 +140,7 @@ const { data, pending, error } = await useAuthedAsyncData(
     const [year, month] = monthKey.value.split('-')
     return api.get<Envelope<CalendarPayload>>('/schedules', { year, month })
   },
-  { watch: [monthKey] },
+  { watch: [monthKey], lazy: true },
 )
 
 const payload = computed(() => data.value?.data)

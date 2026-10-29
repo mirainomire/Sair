@@ -39,7 +39,7 @@ type DocumentPayload = {
 }
 
 const api = useApi()
-const { data, pending, error } = await useAuthedAsyncData('crew-documents', () => api.get<Envelope<DocumentPayload>>('/documents'))
+const { data, pending, error } = await useAuthedAsyncData('crew-documents', () => api.get<Envelope<DocumentPayload>>('/documents'), { lazy: true })
 const payload = computed(() => data.value?.data)
 const documents = computed(() => payload.value?.documents ?? [])
 const attentionCount = computed(() => documents.value.filter((item) => item.state !== 'safe').length)

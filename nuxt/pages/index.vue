@@ -179,7 +179,7 @@ onMounted(() => {
     delete query.welcome
     void router.replace({ path: '/', query })
   }
-})
+}, { lazy: true })
 
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', updateHeaderOnScroll)
@@ -207,7 +207,7 @@ const { data, pending, error } = await useAuthedAsyncData('home', async () => {
 const { data: chart, error: chartError } = await useAuthedAsyncData(
   () => `home-chart-${range.value}`,
   () => api.get<Envelope<Summary>>('/flights-hours/summary', { range: range.value }),
-  { watch: [range] },
+  { watch: [range], lazy: true },
 )
 
 const home = computed(() => data.value)
