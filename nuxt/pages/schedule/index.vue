@@ -1,6 +1,6 @@
 <template>
   <div class="schedule-page">
-    <header class="block-head">
+    <header class="block-head duty-log-head">
       <h1>Schedule</h1>
       <p>Your roster at a glance.</p>
     </header>
