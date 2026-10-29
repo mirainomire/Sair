@@ -131,7 +131,7 @@ const { data, pending, error } = await useAuthedAsyncData('pilot-logbook', async
     .sort((a, b) => b.localeCompare(a))
     .map((date) => ({ date, duty: dutyByDate.get(date) ?? null, hours: hoursByDate.get(date) ?? 0 }))
   return { referenceDate, entries }
-}, { lazy: true, watch: [period] })
+}, { lazy: true })
 
 const loadError = computed(() => (error.value ? errorText(error.value) : ''))
 const entries = computed(() => data.value?.entries ?? [])
