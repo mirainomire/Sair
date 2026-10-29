@@ -1602,7 +1602,7 @@ html[data-theme="dark"] .next-duty-empty .btn-primary { background: #356783; bor
 .today-duty-info strong, .week-duty-card strong { display: block; color: var(--navy); font-size: 14px; line-height: 1.3; }
 .today-duty-info small, .week-duty-card small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
 .week-duty-card { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; text-align: left; }
-.schedule-next-duty { align-items: flex-start; margin-top: 8px; border-left: 4px solid var(--chart); }
+.schedule-next-duty { align-items: flex-start; gap: 3px; margin-top: 8px; border-left: 4px solid var(--chart); }
 .schedule-next-duty .eyebrow { margin: 0 0 4px; color: var(--navy-2); font-size: 10px; font-weight: 800; }
 .block-head h1, .block-head h2, .block-head h3 { color: var(--navy); }
 .block-head h2 { font-size: 18px; }
@@ -1839,7 +1839,7 @@ html[data-theme="dark"] .legend-no-roster i { border-color: #8fa4b2; background:
 html[data-theme="dark"] .calendar-hint { color: #d6e2ea; }
 .tabbar { padding-bottom: max(5px, env(safe-area-inset-bottom)); }
 .duty-log { display: flex; flex-direction: column; gap: 12px; color: #0e2138; }
-.schedule-page > .block-head { margin-top: 0; }
+.schedule-page > .block-head { margin-top: 0; margin-bottom: 14px; }
 .duty-log-head { margin: 0; }
 .duty-log-head h1 { margin: 0; color: #0e2138; font-size: 22px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; }
 .duty-log-head p { margin: 3px 0 0; color: #8b97a6; font-size: 12.5px; font-weight: 500; line-height: 1.35; }
