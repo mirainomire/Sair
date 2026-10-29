@@ -28,6 +28,18 @@
         </div>
       </header>
 
+      <section v-if="homeDuty" class="next-duty-card" aria-labelledby="home-duty-title">
+        <div class="next-duty-heading">
+          <span class="eyebrow">{{ homeDuty.date === home.me.scheduleToday ? "Today's duty" : 'Next duty' }}</span>
+          <strong id="home-duty-title">{{ homeDuty.baseName }} - {{ dutyTitle(homeDuty.dutyType) }}</strong>
+          <small>{{ formatScheduleDate(homeDuty.date) }}</small>
+        </div>
+        <div class="next-duty-meta">
+          <strong>{{ homeDuty.countLogbooks === homeDuty.countSchedules ? 'All activities logged' : `${homeDuty.countSchedules - homeDuty.countLogbooks} activities remaining` }}</strong>
+          <NuxtLink to="/schedule">Open Schedule</NuxtLink>
+        </div>
+      </section>
+
       <Teleport to="body">
         <div class="home-compact-summary" :class="{ visible: compactHeader }" :aria-hidden="!compactHeader" :inert="!compactHeader">
           <div class="home-compact-left">
@@ -137,6 +149,8 @@ type Doc = {
   state: 'safe' | 'soon' | 'urgent' | 'critical' | 'expired'
 }
 
+type ScheduleEntry = { date: string; baseName: string; dutyType: string; countSchedules: number; countLogbooks: number }
+
 const ranges: RangeKey[] = ['1w', '1m', '3m', '6m', '1y']
 const range = ref<RangeKey>('1w')
 const compactHeader = ref(false)
@@ -174,12 +188,20 @@ onBeforeUnmount(() => {
 })
 
 const { data, pending, error } = await useAuthedAsyncData('home', async () => {
-  const [me, docs] = await Promise.all([
-    api.get<Envelope<PilotProfile>>('/pilot/me'),
-            api.get<Envelope<{ documents: Doc[] }>>('/documents'),
+  const me = await api.get<Envelope<PilotProfile>>('/pilot/me')
+  const reference = me.data.scheduleToday
+  const [year, month] = reference.slice(0, 7).split('-').map(Number)
+  const nextMonth = new Date(Date.UTC(year, month, 1))
+  const scheduleMonths = [
+    { year, month },
+    { year: nextMonth.getUTCFullYear(), month: nextMonth.getUTCMonth() + 1 },
+  ]
+  const [docs, schedules] = await Promise.all([
+    api.get<Envelope<{ documents: Doc[] }>>('/documents'),
+    Promise.all(scheduleMonths.map(({ year: scheduleYear, month: scheduleMonth }) => api.get<Envelope<{ entries: ScheduleEntry[] }>>('/schedules', { year: scheduleYear, month: scheduleMonth }))),
   ])
   pilotStore.setProfile(me.data)
-  return { me: me.data, docs: docs.data }
+  return { me: me.data, docs: docs.data, schedule: schedules.flatMap((schedule) => schedule.data.entries) }
 })
 
 const { data: chart, error: chartError } = await useAuthedAsyncData(
@@ -194,6 +216,10 @@ const loadError = computed(() => (error.value ? errorText(error.value) : ''))
 const chartErrorText = computed(() => (chartError.value ? errorText(chartError.value) : ''))
 const cards = computed(() => summary.value?.cards ?? [])
 const documents = computed(() => home.value?.docs.documents ?? [])
+const scheduleEntries = computed(() => home.value?.schedule ?? [])
+const homeDuty = computed(() => scheduleEntries.value
+  .filter((entry) => entry.date >= (home.value?.me.scheduleToday ?? '') && entry.countLogbooks < entry.countSchedules)
+  .sort((a, b) => a.date.localeCompare(b.date))[0] ?? scheduleEntries.value.find((entry) => entry.date === home.value?.me.scheduleToday))
 const greeting = computed(() => {
   const hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Jakarta', hour: 'numeric', hourCycle: 'h23' }).format(new Date(currentTime.value)))
   if (hour < 12) return 'Good morning'
@@ -269,6 +295,11 @@ function scheduleDateLabel(includeYear: boolean) {
     timeZone: 'UTC',
   }).format(new Date(`${iso}T00:00:00.000Z`))
   return formatted
+}
+
+function formatScheduleDate(iso: string) {
+  return new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
+    .format(new Date(`${iso}T00:00:00.000Z`))
 }
 
 function badgeText(state: Doc['state']) {

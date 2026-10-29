@@ -866,6 +866,7 @@ input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="
 .layout-leave-active { transition: opacity 280ms ease; }
 .layout-enter-active { transition: opacity 360ms cubic-bezier(0.2, 0.75, 0.25, 1); }
 .layout-enter-from { opacity: 0; }
+.nuxt-loading-indicator { box-shadow: 0 0 10px rgba(34, 197, 232, 0.7); }
 .layout-leave-active { position: absolute; inset: 0; width: 100%; pointer-events: none; }
 .layout-leave-to { opacity: 0; }
 
