@@ -1,4 +1,5 @@
-import type { AsyncDataOptions, MultiWatchSources } from 'nuxt/app'
+import type { AsyncDataOptions } from 'nuxt/app'
+import type { MultiWatchSources } from 'vue'
 
 function isUnauthorized(error: unknown) {
   if (!error || typeof error !== 'object') return false

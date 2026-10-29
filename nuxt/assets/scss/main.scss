@@ -867,6 +867,9 @@ input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="
 .layout-enter-active { transition: opacity 360ms cubic-bezier(0.2, 0.75, 0.25, 1); }
 .layout-enter-from { opacity: 0; }
 .nuxt-loading-indicator { box-shadow: 0 0 10px rgba(34, 197, 232, 0.7); }
+.route-loading { position: fixed; z-index: 900; inset: 0; display: grid; place-items: start center; padding: 92px 16px 24px; background: rgba(244, 247, 249, 0.78); backdrop-filter: blur(3px); }
+.route-loading-card { width: min(100%, 640px); padding: 4px 2px; pointer-events: none; }
+html[data-theme="dark"] .route-loading { background: rgba(7, 20, 33, 0.82); }
 .layout-leave-active { position: absolute; inset: 0; width: 100%; pointer-events: none; }
 .layout-leave-to { opacity: 0; }
 

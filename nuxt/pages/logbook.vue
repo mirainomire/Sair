@@ -87,7 +87,7 @@
 
 <script setup lang="ts">
 import type { Envelope } from '~/types/api'
-import { errorText } from '~/utils/format'
+import { dutyTitle, errorText, formatUtcDate, formatUtcMonth } from '~/utils/format'
 
 type Duty = {
   date: string
@@ -191,7 +191,7 @@ function monthRangeBetween(start: string, end: string) {
 }
 
 function formatMonth(value: string) {
-  return new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${value}-01T00:00:00.000Z`))
+  return formatUtcMonth(value)
 }
 
 function dayNumber(iso: string) {
@@ -199,7 +199,7 @@ function dayNumber(iso: string) {
 }
 
 function weekday(iso: string) {
-  return new Intl.DateTimeFormat('en-GB', { weekday: 'short', timeZone: 'UTC' }).format(new Date(`${iso}T00:00:00.000Z`))
+  return formatUtcDate(iso, { weekday: 'short' })
 }
 
 function formatHours(hours: number) {
@@ -208,15 +208,6 @@ function formatHours(hours: number) {
 
 function entryCountLabel(count: number) {
   return `${count} ${count === 1 ? 'entry' : 'entries'}`
-}
-
-function dutyTitle(code: string) {
-  const labels: Record<string, string> = {
-    DTY: 'Flight duty', RLV: 'Leave', SCK: 'Sick leave', TRD: 'Travel day',
-    TRX: 'Training', ADM: 'Administration', FER: 'Ferry flight',
-    MED: 'Medical', REC: 'Recurrent training', ULV: 'Unpaid leave',
-  }
-  return labels[code] ?? 'Duty'
 }
 
 function entryTitle(entry: LogbookEntry) {

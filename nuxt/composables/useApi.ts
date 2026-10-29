@@ -33,7 +33,7 @@ export function useApi() {
         return response
       })
     },
-    post<T>(path: string, body?: unknown) {
+    post<T>(path: string, body?: Record<string, unknown>) {
       return $fetch<T>(url(path), { method: 'POST', body, headers: headers() })
     },
   }

@@ -126,7 +126,7 @@
 
 <script setup lang="ts">
 import type { Envelope } from '~/types/api'
-import { errorText } from '~/utils/format'
+import { dutyTitle, errorText, formatUtcDate } from '~/utils/format'
 import type { PilotProfile } from '~/stores/pilot'
 
 definePageMeta({ pageTransition: false })
@@ -179,7 +179,7 @@ onMounted(() => {
     delete query.welcome
     void router.replace({ path: '/', query })
   }
-}, { lazy: true })
+})
 
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', updateHeaderOnScroll)
@@ -244,10 +244,6 @@ function cardLabel(label: string) {
   return labels[label] ?? label
 }
 
-function dutyTitle(code: string) {
-  return code === 'DTY' ? 'Flight duty' : code === 'RLV' ? 'Leave' : code
-}
-
 function cardWindow(card: Summary['cards'][number]) {
   return card.windowDays === 1 ? 'Today only' : `Rolling ${card.windowDays} days`
 }
@@ -298,8 +294,7 @@ function scheduleDateLabel(includeYear: boolean) {
 }
 
 function formatScheduleDate(iso: string) {
-  return new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
-    .format(new Date(`${iso}T00:00:00.000Z`))
+  return formatUtcDate(iso, { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 function badgeText(state: Doc['state']) {
@@ -321,7 +316,7 @@ function overdueLabel(item: { daysRemaining: number }) {
 }
 
 function formatDate(iso: string) {
-  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(iso + 'T00:00:00.000Z'))
+  return formatUtcDate(iso, { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 useHead({ title: 'Home - Susi Air Pilot Portal' })

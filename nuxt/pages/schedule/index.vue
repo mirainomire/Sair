@@ -98,7 +98,7 @@
 
 <script setup lang="ts">
 import type { Envelope } from '~/types/api'
-import { errorText } from '~/utils/format'
+import { dutyTitle, errorText, formatUtcDate, formatUtcMonth } from '~/utils/format'
 
 type Duty = {
   date: string
@@ -156,9 +156,7 @@ watch(weekOffset, (value) => {
 const loadError = computed(() => (meError.value ? errorText(meError.value) : error.value ? errorText(error.value) : ''))
 const monthLabel = computed(() => {
   if (!monthKey.value) return ''
-  return new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
-    new Date(`${monthKey.value}-01T00:00:00.000Z`),
-  )
+  return formatUtcMonth(monthKey.value)
 })
 
 const cells = computed(() => {
@@ -203,10 +201,6 @@ function cellCode(duty: Duty) {
   return duty.dutyType === 'DTY' ? duty.baseName : duty.dutyType
 }
 
-function dutyTitle(code: string) {
-  return code === 'DTY' ? 'Flight duty' : code === 'RLV' ? 'Leave' : code
-}
-
 function dutyProgress(duty: Duty) {
   return duty.countLogbooks === duty.countSchedules ? 'All activities logged' : `${duty.countSchedules - duty.countLogbooks} activities remaining`
 }
@@ -218,24 +212,23 @@ function addDays(iso: string, days: number) {
 }
 
 function formatWeekday(iso: string) {
-  return new Intl.DateTimeFormat('en-GB', { weekday: 'long', timeZone: 'UTC' }).format(new Date(`${iso}T00:00:00.000Z`))
+  return formatUtcDate(iso, { weekday: 'long' })
 }
 
 function formatDay(iso: string) {
-  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T00:00:00.000Z`))
+  return formatUtcDate(iso, { day: 'numeric' })
 }
 
 function formatMonthYear(iso: string) {
-  return new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T00:00:00.000Z`))
+  return formatUtcDate(iso, { month: 'long', year: 'numeric' })
 }
 
 function formatLongDate(iso: string) {
-  return new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }).format(new Date(`${iso}T00:00:00.000Z`))
+  return formatUtcDate(iso, { weekday: 'long', day: 'numeric', month: 'long' })
 }
 
 function calendarLabel(cell: { date: string; duty: Duty | null }) {
-  const dateLabel = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', timeZone: 'UTC' })
-    .format(new Date(`${cell.date}T00:00:00.000Z`))
+  const dateLabel = formatUtcDate(cell.date, { day: 'numeric', month: 'long' })
   if (!cell.duty) return `${dateLabel}, no duty recorded`
   const mark = dutyMark(cell.duty) === String.fromCharCode(0x2713) ? 'all duties logged' : `${dutyMark(cell.duty)} duties remaining`
   return `${dateLabel}, ${cell.duty.baseName}, ${mark}`

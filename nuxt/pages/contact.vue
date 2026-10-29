@@ -6,7 +6,9 @@
       <p>Use the right operational desk for roster, dispatch, or account support.</p>
     </header>
 
-    <div class="contact-panels">
+    <p v-if="error" class="error" role="alert">{{ errorText(error) }}</p>
+    <SkeletonLoader v-else-if="pending" label="Loading crew operations contacts" :rows="3" />
+    <div v-else class="contact-panels">
       <section class="contact-panel">
         <div class="contact-panel-heading">
           <span class="contact-kicker">Operational support</span>
@@ -34,9 +36,10 @@
 <script setup lang="ts">
 import type { Envelope } from '~/types/api'
 import type { PilotProfile } from '~/stores/pilot'
+import { errorText } from '~/utils/format'
 
 const api = useApi()
-const { data } = await useAuthedAsyncData('operations-contacts', () => api.get<Envelope<PilotProfile>>('/pilot/me'))
+const { data, pending, error } = await useAuthedAsyncData('operations-contacts', () => api.get<Envelope<PilotProfile>>('/pilot/me'), { lazy: true })
 const contacts = computed(() => data.value?.data.operationsContacts ?? {
   crewScheduling: { phone: '', whatsapp: '', hours: 'Service hours: Not provided' },
   occ: { phone: '', whatsapp: '', hours: 'Service hours: Not provided' },
